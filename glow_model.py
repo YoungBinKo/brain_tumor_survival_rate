@@ -14,11 +14,6 @@ print('Jax version', jax.__version__)
 print('Flax version', flax.__version__)
 random_key = jax.random.PRNGKey(0)
 
-from google.colab import drive
-drive.mount('/content/drive')
-
-!unzip '/content/drive/MyDrive/img.zip'
-
 from layers import squeeze, unsqueeze
 from layers import Split
 from layers import ActNorm, Conv1x1, AffineCoupling
@@ -509,7 +504,7 @@ def train_glow(train_ds,
 # In particular, I had  to use shallower
 # flows (smaller K value)
 config_dict = {
-    'image_path': "/content/img",
+    'image_path': "./LFW/img2/img/img",
     'train_split': 0.6,
     'image_size': 64,
     'num_channels': 3,
@@ -564,23 +559,23 @@ def get_val_dataset(image_path, image_size, num_bits, batch_size,
 
 # Commented out IPython magic to ensure Python compatibility.
 # %%time
-# num_images = len(glob.glob(f"{config_dict['image_path']}/*.jpg"))
-# config_dict['steps_per_epoch'] = num_images // config_dict['batch_size']
-# train_split = int(config_dict['train_split'] * num_images)
-# print(f"{num_images} training images")
-# print(f"{config_dict['steps_per_epoch']} training steps per epoch")
-# 
-# #Train data
-# train_ds = get_train_dataset(**config_dict, skip=train_split)
-# 
-# # Val data
-# # During training we'll only evaluate on one batch of validation 
-# # to save on computations
-# val_ds = get_val_dataset(**config_dict, take=config_dict['batch_size'], repeat=True)
-# 
-# # Sample
-# plot_image_grid(postprocess(next(val_ds), num_bits=config_dict['num_bits'])[:25], 
-#                 title="Input data sample")
+num_images = len(glob.glob(f"{config_dict['image_path']}/*.jpg"))
+config_dict['steps_per_epoch'] = num_images // config_dict['batch_size']
+train_split = int(config_dict['train_split'] * num_images)
+print(f"{num_images} training images")
+print(f"{config_dict['steps_per_epoch']} training steps per epoch")
+
+#Train data
+train_ds = get_train_dataset(**config_dict, skip=train_split)
+
+# Val data
+# During training we'll only evaluate on one batch of validation
+# to save on computations
+val_ds = get_val_dataset(**config_dict, take=config_dict['batch_size'], repeat=True)
+
+# Sample
+plot_image_grid(postprocess(next(val_ds), num_bits=config_dict['num_bits'])[:25],
+                title="Input data sample")
 
 """## Train"""
 
